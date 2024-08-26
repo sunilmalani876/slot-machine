@@ -2,3 +2,10 @@
 @tailwind components;
 @tailwind utilities;
   
+
+@layer utilities {
+    
+    .input {
+        @apply w-full outline-none border-b-4 text-black border-gray-300 rounded-md px-2 ring-0 focus-visible:ring-0 focus:border-gray-500 focus-visible:ring-opacity-0 !important;
+    }
+}
