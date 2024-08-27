@@ -7,6 +7,7 @@ import {
 import SignIn from "./components/auth/sigin";
 import { useAuthContext } from "./context/authContext";
 import Game from "./components/game/game";
+import Home from "./components/home";
 
 function App() {
   const { token } = useAuthContext();
@@ -15,7 +16,7 @@ function App() {
     <div className="">
       <Router>
         <Routes>
-          <Route path="/" element={<p>Home page</p>} />
+          <Route path="/" element={<Home />} />
 
           <Route
             path="/signin"
