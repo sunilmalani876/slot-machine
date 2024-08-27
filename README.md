@@ -10,3 +10,9 @@ Currently, two official plugins are available:
 <!-- https://www.figma.com/design/PRsO5kdogHC46F82Zyo1qn/Slots-gaming-website-(Community)?node-id=1-3&t=Eb3XLahTWgewk7gr-0 -->
 
 <!-- https://dribbble.com/shots/21953371-WeStud-Creative-Log-In-For-The-Educational-Platform -->
+
+<!-- https://www.itaydafna.dev/blog/vertical-circular-animation-with-framer-motion/ -->
+
+<!-- https://codepen.io/kirea/pen/VORGOp -->
+
+<!-- https://stackoverflow.com/questions/62426257/creating-an-animation-for-a-basic-react-slot-machine -->
