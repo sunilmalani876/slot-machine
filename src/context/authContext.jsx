@@ -1,6 +1,7 @@
+/* eslint-disable react/prop-types */
+/* eslint-disable no-unused-vars */
 import Cookies from "js-cookie";
 import { createContext, useContext, useEffect, useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 export const AuthContext = createContext();
@@ -10,6 +11,10 @@ export const AuthContextProvider = ({ children }) => {
 
   const [token, setToken] = useState(Cookies.get("token") || null);
   const [UserId, setUserId] = useState(Cookies.get("userId") || null);
+  const [currentState, setCurrentState] = useState({
+    previous: "",
+    current: "",
+  });
 
   const SignUp = async (data) => {
     const res = await fetch(`${BASE_URL}/register`, {
@@ -89,7 +94,17 @@ export const AuthContextProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ SignUp, SignIn, token, setToken, UserId, setUserId, LogOut }}
+      value={{
+        SignUp,
+        SignIn,
+        token,
+        setToken,
+        UserId,
+        setUserId,
+        LogOut,
+        currentState,
+        setCurrentState,
+      }}
     >
       {children}
     </AuthContext.Provider>

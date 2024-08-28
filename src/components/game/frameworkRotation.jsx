@@ -1,8 +1,8 @@
+/* eslint-disable react/prop-types */
 // import { assets } from "@/lib/asset-utils";
 import { frameworks } from "@/lib/utils";
 import clsx from "clsx";
 // import Image from "next/image";
-import React from "react";
 
 export const FrameworkRotation = ({ currentFramework }) => {
   const assets = {

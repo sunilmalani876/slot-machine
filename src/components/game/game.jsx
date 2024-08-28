@@ -20,7 +20,7 @@ const Game = () => {
       <img
         src={bottom}
         alt="top"
-        className="w-full fixed bottom-0 sm:-bottom-3"
+        className="w-full z-0 fixed bottom-0 sm:-bottom-3"
       />
 
       <Outlet />

@@ -26,12 +26,14 @@ function App() {
           />
           <Route
             path="/signup"
-            element={token ? <Navigate to="/" /> : <SignIn />}
+            // element={token ? <Navigate to="/" /> : <SignIn />}
+            element={<SignIn />}
           />
 
           <Route
             path="/game/:id"
-            element={token ? <Game /> : <Navigate to="/signin" />}
+            element={<Game />}
+            // element={token ? <Game /> : <Navigate to="/signin" />}
           >
             <Route path="" element={<StartGame />} />
             <Route path="play" element={<SlotGame />} />
