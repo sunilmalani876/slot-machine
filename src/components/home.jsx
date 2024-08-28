@@ -3,6 +3,7 @@ import top from "@/assets/resource/top-wave.png";
 import avatar from "@/assets/resource/avatar.png";
 import bottom from "@/assets/resource/bottom-wave.png";
 import { Button } from "./ui/button";
+import { Link } from "react-router-dom";
 
 const Home = () => {
   return (
@@ -28,24 +29,32 @@ const Home = () => {
           className="absolute right-5 -top-5 rotate-[-20deg] sm:rotate-[-30deg] z-10"
         />
 
-        <h2 className="text-center text-4xl font-bold text-[#341D1A] sm:text-6xl">
-          Let You Mind
+        <h2 className="text-center font-pocket text-4xl text-[#341D1A] sm:text-6xl">
+          Let Your Mind <span className="">🥂</span>
           <span className="animate-text-gradient inline-flex bg-clip-text leading-tight text-[#341D1A]">
-            Explore New World 🥂.
+            Explore New World.
           </span>
         </h2>
-        <p className="mt-2 text-[#341D1A] font-semibold max-sm:px-4 text-center text-lg leading-6">
-          Ready-to-use, simply copy and paste into your next project. All
-          snippets crafted with Tailwind CSS and{" "}
-          <span className="cursor-wait opacity-70">Vanilla CSS</span> for easy
-          integration.
+
+        <p className="mt-2 font-pocket text-[#341D1A] max-sm:px-4 text-center text-lg leading-6">
+          Discover a world of thrilling games, unbeatable jackpots, and
+          top-notch entertainment.
+          <span className="cursor-wait opacity-70">Join us</span>
+          today and experience the ultimate in luxury and fun!
         </p>
+
         <div className="mt-4 flex gap-4">
-          <Button className="group relative inline-flex items-center justify-center overflow-hidden rounded-xl border bg-transparent px-6 font-medium bg-white hover:bg-neutral-100 border-[#341D1A] text-black transition-all [box-shadow:0px_4px_1px_#515895] active:translate-y-[3px] active:shadow-none">
-            Log-In
+          <Button
+            asChild
+            className="group font-pocket relative inline-flex items-center justify-center overflow-hidden rounded-xl border bg-transparent px-6 text-lg font-medium bg-white hover:bg-neutral-100 border-[#341D1A] text-black transition-all [box-shadow:0px_4px_1px_#515895] active:translate-y-[3px] active:shadow-none"
+          >
+            <Link to="/signin">Log-In</Link>
           </Button>
-          <Button className="group relative inline-flex items-center justify-center overflow-hidden rounded-xl border bg-transparent px-6 font-medium bg-white hover:bg-neutral-100 border-[#341D1A] text-black transition-all [box-shadow:0px_4px_1px_#515895] active:translate-y-[3px] active:shadow-none">
-            Sign-up
+          <Button
+            asChild
+            className="group font-pocket text-lg relative inline-flex items-center justify-center overflow-hidden rounded-xl border bg-transparent px-6 font-medium bg-white hover:bg-neutral-100 border-[#341D1A] text-black transition-all [box-shadow:0px_4px_1px_#515895] active:translate-y-[3px] active:shadow-none"
+          >
+            <Link to="/signup">Sign-up</Link>
           </Button>
         </div>
       </div>

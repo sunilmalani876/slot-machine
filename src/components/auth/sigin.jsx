@@ -84,12 +84,13 @@ const SignIn = () => {
       } else {
         const result = await SignIn(newData);
 
+        console.log(result);
         if (result.success) {
-          Cookies.set("token", result.accessToken);
-          Cookies.set("userId", result.id);
-          setToken(result.accessToken);
+          Cookies.set("token", result.tokens.accessToken);
+          Cookies.set("userId", JSON.stringify(result.user));
+          setToken(result.tokens.accessToken);
           toast.success("user login successfully");
-          navigate(`/game/${result.id}`, {
+          navigate(`/game/${result.user.id}`, {
             replace: true,
           });
         }

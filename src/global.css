@@ -6,8 +6,17 @@
   .input {
     @apply w-full outline-none border-b-4 text-black border-gray-300 rounded-md px-2 ring-0 focus-visible:ring-0 focus:border-gray-500 focus-visible:ring-opacity-0 !important;
   }
+  
+  .betAmounInput {
+    @apply w-full max-w-[260px] outline-none bg-[#887C7B] border-t-[5px] text-black border-[#665D5C] rounded-xl px-2 focus-visible:ring-0 focus:border-[#665D5C] focus-visible:ring-opacity-0 !important;
+  }
 
   .button {
     @apply bg-red-400 border border-b-[5px] transition-all border-red-500 hover:bg-red-400 active:border-red-400 !important;
   }
+}
+
+@font-face {
+  font-family: "Pocket Monk";
+  src: local("pocket-monk"), url("./assets/font/PocketMonk.woff");
 }

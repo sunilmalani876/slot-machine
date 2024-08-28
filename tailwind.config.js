@@ -17,6 +17,9 @@ module.exports = {
       },
     },
     extend: {
+      fontFamily: {
+        pocket: ['"Pocket Monk"', "sans-serif"],
+      },
       keyframes: {
         "accordion-down": {
           from: { height: "0" },

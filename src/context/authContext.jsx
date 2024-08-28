@@ -54,14 +54,19 @@ export const AuthContextProvider = ({ children }) => {
     await res.json();
 
     Cookies.remove("token");
-    Cookies.remove("id");
+    Cookies.remove("userId");
 
     toast.success("User Log-Out Successfully...");
   };
 
-  //   useEffect(() => {
+  // useEffect(() => {
+  //   const userId = Cookies.get("userId");
+
+  //   console.log("id", userId);
+
+  //   if (userId) {
   //     const fetCurrentUser = async () => {
-  //       const res = await fetch(`${import.meta.env.VITE_URL}/auth/crnt-usr`, {
+  //       const res = await fetch(`${BASE_URL}/currentUser/${userId}`, {
   //         method: "GET",
   //         headers: {
   //           Accept: "application/json",
@@ -79,7 +84,8 @@ export const AuthContextProvider = ({ children }) => {
   //     };
 
   //     fetCurrentUser();
-  //   }, [token]);
+  //   }
+  // }, [token]);
 
   return (
     <AuthContext.Provider
