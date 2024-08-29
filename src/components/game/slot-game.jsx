@@ -12,9 +12,19 @@ import { useNavigate } from "react-router-dom";
 import { useSocketContext } from "@/context/socketContext";
 import Cookies from "js-cookie";
 
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+
 const SlotGame = () => {
   const navigate = useNavigate();
   const [Start, setStart] = useState(false);
+  const [DialogOpen, setDialogOpen] = useState(false);
 
   const { socket } = useSocketContext();
   const { getGameState, setGameState, setWinState, getWinState } =
@@ -32,13 +42,8 @@ const SlotGame = () => {
         if (socket) {
           socket.emit("PRESSED_SPIN_BUTTON");
 
-          // socket.on("MESSAGE", (msg) => {
-          //   // console.log("msg-----", msg);
-          // });
-
           socket.on("WON_LOOSE", (msg) => {
             // console.log("win  loose ", msg);
-
             setWinState(msg);
           });
 
@@ -48,18 +53,23 @@ const SlotGame = () => {
 
             if (cookieValue) {
               const data = JSON.parse(cookieValue);
+              console.log(data);
               const first = data.combo[0];
               const second = data.combo[1];
               const third = data.combo[2];
-              // console.log(data);
               resolve([first, second, third]);
+
+              setTimeout(() => {
+                setDialogOpen(true);
+              }, 500);
+              // console.log(data);
             } else {
               console.error("Cookie 'slotGameState' not found or empty.");
               resolve([]); // Resolve with empty array if no data
             }
           }, 500);
         }
-      }, 1000); // Simulate network delay
+      }, 700); // Simulate network delay
     });
   };
 
@@ -165,6 +175,19 @@ const SlotGame = () => {
             </Button>
           </div>
         )}
+
+        <Dialog open={DialogOpen} setOpen={setDialogOpen} className="z-50">
+          {/* <DialogTrigger className="z-50">Open</DialogTrigger> */}
+          <DialogContent WIN={false}>
+            <DialogHeader>
+              <DialogTitle>Are you absolutely sure?</DialogTitle>
+              <DialogDescription>
+                This action cannot be undone. This will permanently delete your
+                account and remove your data from our servers.
+              </DialogDescription>
+            </DialogHeader>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
