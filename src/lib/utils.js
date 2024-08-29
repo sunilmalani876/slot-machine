@@ -5,6 +5,6 @@ export function cn(...inputs) {
   return twMerge(clsx(inputs));
 }
 
-export const frameworks = ["1", "2", "3", "4", "5", "6", "7"];
+export const frameworks = ["0", "1", "2", "3", "4", "5", "6", "7"];
 
 export const Framework = frameworks;

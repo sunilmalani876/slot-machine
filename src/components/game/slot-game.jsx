@@ -43,13 +43,19 @@ const SlotGame = () => {
           socket.emit("PRESSED_SPIN_BUTTON");
 
           socket.on("WON_LOOSE", (msg) => {
-            // console.log("win  loose ", msg);
-            setWinState(msg);
+            console.log(msg);
+            Cookies.set("slotGameState", JSON.stringify(msg));
+
+            // setWinState(msg);
           });
 
           setTimeout(() => {
+            // Debugging line to check if cookie is retrieved
+            console.log("Retrieving cookie...");
             const cookieValue = Cookies.get("slotGameState");
-            // console.log("Cookie Value: ", cookieValue);
+
+            // Debugging line to check the retrieved cookie value
+            console.log("Cookie Value: ", cookieValue);
 
             if (cookieValue) {
               const data = JSON.parse(cookieValue);
@@ -62,7 +68,6 @@ const SlotGame = () => {
               setTimeout(() => {
                 setDialogOpen(true);
               }, 500);
-              // console.log(data);
             } else {
               console.error("Cookie 'slotGameState' not found or empty.");
               resolve([]); // Resolve with empty array if no data
@@ -72,6 +77,44 @@ const SlotGame = () => {
       }, 700); // Simulate network delay
     });
   };
+
+  // const getSlotResults = async () => {
+  //   // Mock API response; replace this with your actual API call
+  //   return new Promise((resolve) => {
+  //     setTimeout(() => {
+  //       if (socket) {
+  //         socket.emit("PRESSED_SPIN_BUTTON");
+
+  //         socket.on("WON_LOOSE", (msg) => {
+  //           // console.log("win  loose ", msg);
+  //           setWinState(msg);
+  //         });
+
+  //         setTimeout(() => {
+  //           const cookieValue = Cookies.get("slotGameState");
+  //           // console.log("Cookie Value: ", cookieValue);
+
+  //           if (cookieValue) {
+  //             const data = JSON.parse(cookieValue);
+  //             console.log(data);
+  //             const first = data.combo[0];
+  //             const second = data.combo[1];
+  //             const third = data.combo[2];
+  //             resolve([first, second, third]);
+
+  //             setTimeout(() => {
+  //               setDialogOpen(true);
+  //             }, 500);
+  //             // console.log(data);
+  //           } else {
+  //             console.error("Cookie 'slotGameState' not found or empty.");
+  //             resolve([]); // Resolve with empty array if no data
+  //           }
+  //         }, 500);
+  //       }
+  //     }, 700); // Simulate network delay
+  //   });
+  // };
 
   useEffect(() => {
     let intervalId;
@@ -178,7 +221,7 @@ const SlotGame = () => {
 
         <Dialog open={DialogOpen} setOpen={setDialogOpen} className="z-50">
           {/* <DialogTrigger className="z-50">Open</DialogTrigger> */}
-          <DialogContent WIN={false}>
+          {/* <DialogContent WIN={false}>
             <DialogHeader>
               <DialogTitle>Are you absolutely sure?</DialogTitle>
               <DialogDescription>
@@ -186,7 +229,7 @@ const SlotGame = () => {
                 account and remove your data from our servers.
               </DialogDescription>
             </DialogHeader>
-          </DialogContent>
+          </DialogContent> */}
         </Dialog>
       </div>
     </div>

@@ -5,6 +5,7 @@ import clsx from "clsx";
 
 export const FrameworkRotation = ({ currentFramework }) => {
   const assets = {
+    0: "😒",
     1: "🤡",
     2: "👻",
     3: "⛄️",
