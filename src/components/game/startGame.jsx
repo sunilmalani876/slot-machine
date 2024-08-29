@@ -1,14 +1,59 @@
-import React from "react";
-import bottom from "@/assets/resource/bottom-wave.png";
 import avatar from "@/assets/resource/avatar.png";
 import avatar2 from "@/assets/resource/avatar2.png";
 import youtube from "@/assets/resource/youtube.png";
 
-import Logo from "./logo";
+import { useAuthContext } from "@/context/authContext";
+import { Link } from "react-router-dom";
 import { Button } from "../ui/button";
-import { Link, Outlet } from "react-router-dom";
+import { useSocketContext } from "@/context/socketContext";
+import { useEffect } from "react";
+import { toast } from "sonner";
 
 const StartGame = () => {
+  const { setGameState, getGameState } = useAuthContext();
+  const { socket } = useSocketContext();
+  const CurrentState = getGameState();
+
+  // useEffect(() => {
+  //   if (socket) {
+  //     console.log("q");
+  //     socket.emit("START_GAME", (message) => {
+  //       console.log("Received START_GAME message:", message);
+  //       // if (CurrentState.previous === "") {
+  //       //   // Handle the message
+  //       // }
+  //     });
+
+  //     return () => {
+  //       socket.off("START_GAME");
+  //     };
+  //   }
+  // }, [socket, CurrentState.previous]);
+
+  useEffect(() => {
+    // Set up the socket listener when the component mounts
+    socket?.on("START_GAME", (mes) => {
+      console.log("socket message", mes);
+    });
+
+    // Clean up the socket listener when the component unmounts
+    return () => {
+      socket?.off("START_GAME");
+    };
+  }, []); // Empty dependency array means this runs once on mount
+
+  const handleClick = async (e) => {
+    e.preventDefault();
+
+    // Emit an event to the server if needed
+    // socket.emit('START_GAME');
+
+    setGameState({
+      previous: "START_GAME",
+      current: "SET_BET_AMOUNT",
+    });
+  };
+
   return (
     <div className="w-full relative mx-auto my-auto flex max-w-2xl flex-col gap-5 items-center">
       {/* CARD 1 */}
@@ -26,7 +71,21 @@ const StartGame = () => {
 
         <div className="absolute -right-5">
           <Button
-            asChild
+            onClick={(e) => {
+              e.preventDefault();
+
+              socket?.emit("START_GAME");
+
+              socket?.on("MESSAGE", (msg) => {
+                toast.message(msg);
+              });
+
+              setGameState({
+                previous: "START_GAME",
+                current: "SET_BET_AMOUNT",
+              });
+            }}
+            // onClick={handleClick}
             size="sm"
             className="group cursor-pointer items-center justify-center rounded-xl border text-lg font-medium bg-[#7A85F4] hover:bg-[#7A85F4]/95 border-[#341D1A] transition-all [box-shadow:0px_4px_1px_#515895] active:translate-y-[3px] active:shadow-none"
           >

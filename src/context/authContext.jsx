@@ -15,6 +15,7 @@ export const AuthContextProvider = ({ children }) => {
     previous: "",
     current: "",
   });
+  const [slotGameState, setSlotGameState] = useState(null);
 
   const SignUp = async (data) => {
     const res = await fetch(`${BASE_URL}/register`, {
@@ -64,11 +65,39 @@ export const AuthContextProvider = ({ children }) => {
     toast.success("User Log-Out Successfully...");
   };
 
+  const getUser = () => {
+    const userData = Cookies.get("userId");
+
+    return userData ? JSON.parse(userData) : "";
+  };
+
+  const setGameState = (data) => {
+    setCurrentState({ previous: data.previous, current: data.current });
+
+    Cookies.set("userState", JSON.stringify(data));
+  };
+
+  const getGameState = () => {
+    const data = Cookies.get("userState");
+
+    return data ? JSON.parse(data) : { previous: "", current: "" };
+  };
+
+  const setWinState = (data) => {
+    setSlotGameState(data);
+
+    Cookies.set("slotGameState", JSON.stringify(data));
+  };
+
+  const getWinState = () => {
+    const data = Cookies.get("slotGameState");
+
+    return slotGameState ? JSON.parse(slotGameState) : JSON.parse(data);
+  };
+
   // useEffect(() => {
   //   const userId = Cookies.get("userId");
-
   //   console.log("id", userId);
-
   //   if (userId) {
   //     const fetCurrentUser = async () => {
   //       const res = await fetch(`${BASE_URL}/currentUser/${userId}`, {
@@ -78,16 +107,12 @@ export const AuthContextProvider = ({ children }) => {
   //           Authorization: `Bearer ${token}`,
   //         },
   //       });
-
   //       const result = await res.json();
-
   //       console.log("result", result);
-
   //       if (result.success) {
   //         setUser(result.data);
   //       }
   //     };
-
   //     fetCurrentUser();
   //   }
   // }, [token]);
@@ -104,6 +129,11 @@ export const AuthContextProvider = ({ children }) => {
         LogOut,
         currentState,
         setCurrentState,
+        getUser,
+        setGameState,
+        getGameState,
+        setWinState,
+        getWinState,
       }}
     >
       {children}

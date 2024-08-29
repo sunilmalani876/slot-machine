@@ -1,232 +1,118 @@
-import React, { useState, useRef } from "react";
-import ReactDOM from "react-dom";
+import slot from "@/assets/resource/slot.png";
+import slotMachine from "@/assets/resource/slotMachine.png";
+import { frameworks } from "@/lib/utils";
+import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import BetAmount from "./betAmount";
+import { FrameworkRotation } from "./frameworkRotation";
+import { useAuthContext } from "@/context/authContext";
+import { Button } from "../ui/button";
+import { useNavigate } from "react-router-dom";
 
-export const Slots = () => {
-  const fruits = ["🍒", "🍉", "🍊", "🍓", "🍇", "🥝"];
+const SlotGame = () => {
+  const navigate = useNavigate();
+  const [Start, setStart] = useState(false);
+  const [currentFrameworks, setCurrentFrameworks] = useState([0, 0, 0]); // Holds the final API response
+  const [animationFrameworks, setAnimationFrameworks] = useState([0, 1, 2]); // Holds the rotating frameworks during animation
+  const { currentState } = useAuthContext();
 
-  const [fruit1, setFruit1] = useState("🍒");
-  const [fruit2, setFruit2] = useState("🍒");
-  const [fruit3, setFruit3] = useState("🍒");
-  const [rolling, setRolling] = useState(false);
-
-  const slotRefs = [useRef(null), useRef(null), useRef(null)];
-
-  const triggerSlotRotation = (ref) => {
-    function setTop(top) {
-      ref.style.top = `${top}px`;
-    }
-    let options = ref.children;
-    let randomOption = Math.floor(Math.random() * fruits.length);
-    let chosenOption = options[randomOption];
-    setTop(-chosenOption.offsetTop + 2);
-    return fruits[randomOption];
-  };
-
-  const roll = () => {
-    setRolling(true);
-    setTimeout(() => {
-      setRolling(false);
-    }, 4000);
-
-    slotRefs.forEach((slot, i) => {
-      const selected = triggerSlotRotation(slot.current);
-      if (i === 0) setFruit1(selected);
-      if (i === 1) setFruit2(selected);
-      if (i === 2) setFruit3(selected);
+  // Simulate an API call to get slot results
+  const getSlotResults = async () => {
+    // Mock API response; replace this with your actual API call
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve([1, 3, 5]); // Example response
+      }, 2000); // Simulate network delay
     });
   };
 
+  useEffect(() => {
+    let intervalId;
+
+    const rotateFrameworks = () => {
+      setAnimationFrameworks((prevFrameworks) =>
+        prevFrameworks.map((f) => (f + 1) % frameworks.length)
+      );
+    };
+
+    const fetchSlotResults = async () => {
+      // Start rotating animations
+      intervalId = setInterval(rotateFrameworks, 100);
+
+      // Fetch the API result
+      const response = await getSlotResults();
+
+      // Stop animation and set the final frameworks
+      clearInterval(intervalId);
+      setAnimationFrameworks(response);
+      setCurrentFrameworks(response);
+    };
+
+    if (Start) {
+      fetchSlotResults();
+    }
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [Start]);
+
   return (
-    <div className="w-full relative mx-auto my-auto flex max-w-2xl flex-col gap-5 items-center">
-      {/* CARD 1 */}
-      <div className="relative w-full max-w-xs h-[80px] rounded-full rounded-tr-none bg-[#341D1A] flex items-center justify-between text-white">
-        <img
-          src={avatar}
-          alt="avatar"
-          className="object-cover absolute -left-6 -top-1"
-          width={100}
-        />
-        <div className="w-full font-pocket text-xl text-center text-[#FFA013]">
-          Tokio Slots
-          <p className="text-white text-xs">Play Now</p>
+    <div className="w-full z-50">
+      <div className="w-full flex flex-col items-center justify-center">
+        <div className="w-full max-w-sm flex justify-center items-center">
+          <img src={slot} alt="slot" width={200} />
+        </div>
+        <div
+          className="w-full max-w-md aspect-video bg-center bg-no-repeat bg-cover flex relative items-center justify-around px-8"
+          style={{ backgroundImage: `url(${slotMachine})` }}
+        >
+          {animationFrameworks.map((framework, index) => (
+            <div
+              key={index}
+              className="w-[85px] h-[100px] overflow-clip bg-white border-[1.5px] border-gray-300 rounded-md flex justify-center items-center"
+            >
+              <motion.div
+                initial={{ opacity: 0, y: 100 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="boxes relative"
+              >
+                {Start ? (
+                  <FrameworkRotation currentFramework={frameworks[framework]} />
+                ) : (
+                  <p className="text-5xl">❓</p>
+                )}
+              </motion.div>
+            </div>
+          ))}
         </div>
 
-        <div className="absolute -right-5">
+        {currentState.current === "SET_BET_AMOUNT" && <BetAmount />}
+
+        <div className="mt-5 z-[49] w-full max-w-md flex justify-around">
           <Button
-            asChild
             size="sm"
-            className="group cursor-pointer items-center justify-center rounded-xl border text-lg font-medium bg-[#7A85F4] hover:bg-[#7A85F4]/95 border-[#341D1A] transition-all [box-shadow:0px_4px_1px_#515895] active:translate-y-[3px] active:shadow-none"
+            className="group w-[120px] font-pocket cursor-pointer items-center justify-center rounded-xl border text-lg bg-[#F7405E] hover:bg-[#F7405E]/95 border-[#341D1A] transition-all [box-shadow:0px_4px_1px_#AB1C34] active:translate-y-[3px] active:shadow-none"
+            onClick={() => {
+              setStart(false);
+              setAnimationFrameworks([0, 0, 0]); // Reset to default
+              setCurrentFrameworks([0, 0, 0]); // Reset to default
+            }}
           >
-            <Link to="play">
-              <img src={youtube} alt="youtube" className="" width={17} />
-            </Link>
+            Reset
+          </Button>
+          <Button
+            size="sm"
+            className="group w-[120px] font-pocket cursor-pointer items-center justify-center rounded-xl border text-lg bg-[#7A85F4] hover:bg-[#7A85F4]/95 border-[#341D1A] transition-all [box-shadow:0px_4px_1px_#515895] active:translate-y-[3px] active:shadow-none"
+            onClick={() => setStart(true)}
+            disabled={Start}
+          >
+            Spin
           </Button>
         </div>
       </div>
-
-      {/* CARD 2 */}
-      <div className="relative w-full max-w-xs h-[80px] rounded-full rounded-tr-none bg-[#341D1A] flex items-center justify-between text-white">
-        <img
-          src={avatar2}
-          alt="avatar"
-          className="object-cover absolute -left-6 -top-1"
-          width={100}
-        />
-        <div className="w-full font-pocket text-xl text-center text-[#FFA013]">
-          Tokio Pool🎱
-          <p className="text-white text-xs">Play Now</p>
-        </div>
-
-        <div className="absolute -right-5">
-          <Button
-            asChild
-            size="sm"
-            className="group cursor-pointer items-center justify-center rounded-xl border text-lg font-medium bg-[#7A85F4] hover:bg-[#7A85F4]/95 border-[#341D1A] transition-all [box-shadow:0px_4px_1px_#515895] active:translate-y-[3px] active:shadow-none"
-          >
-            <Link to="play">
-              <img src={youtube} alt="youtube" className="" width={17} />
-            </Link>
-          </Button>
-        </div>
-      </div>
-
-      {/*  */}
     </div>
   );
 };
 
-// import React, { useState, useRef } from "react";
-// import ReactDOM from "react-dom";
-
-// export const Slots = () => {
-//   const fruits = ["🍒", "🍉", "🍊", "🍓", "🍇", "🥝"];
-
-//   const [fruit1, setFruit1] = useState("🍒");
-//   const [fruit2, setFruit2] = useState("🍒");
-//   const [fruit3, setFruit3] = useState("🍒");
-//   const [rolling, setRolling] = useState(false);
-
-//   const slotRefs = [useRef(null), useRef(null), useRef(null)];
-
-//   const duration = 3000; // Duration of the roll animation in milliseconds
-
-//   const triggerSlotRotation = (ref) => {
-//     function setTop(top) {
-//       ref.style.top = `${top}px`;
-//     }
-//     let options = ref.children;
-//     let randomOption = Math.floor(Math.random() * fruits.length);
-//     let chosenOption = options[randomOption];
-//     setTop(-chosenOption.offsetTop + 2);
-//     return fruits[randomOption];
-//   };
-
-//   const roll = () => {
-//     setRolling(true);
-
-//     // Start slot rotation
-//     slotRefs.forEach((slot, i) => {
-//       const selected = triggerSlotRotation(slot.current);
-//       if (i === 0) setFruit1(selected);
-//       if (i === 1) setFruit2(selected);
-//       if (i === 2) setFruit3(selected);
-//     });
-
-//     // Stop rolling animation after the duration
-//     setTimeout(() => {
-//       setRolling(false);
-//     }, duration);
-//   };
-
-//   return (
-//     <div className="font-sans text-center">
-//       <div className="relative inline-block h-[100px] w-[80px] overflow-hidden">
-//         <section className="relative border-2 border-light-gray w-[70px] h-[70px] bg-gray text-white text-center text-[25px] leading-[60px] cursor-default">
-//           <div
-//             className={`absolute top-0 w-full transition-transform duration-[${duration}ms] ${
-//               rolling ? "animate-roll" : ""
-//             }`}
-//             ref={slotRefs[0]}
-//           >
-//             {fruits.map((fruit, i) => (
-//               <div
-//                 key={i}
-//                 className="h-[70px] flex items-center justify-center"
-//               >
-//                 <span>{fruit}</span>
-//               </div>
-//             ))}
-//           </div>
-//         </section>
-//       </div>
-//       <div className="relative inline-block h-[100px] w-[80px] overflow-hidden">
-//         <section className="relative border-2 border-light-gray w-[70px] h-[70px] bg-gray text-white text-center text-[25px] leading-[60px] cursor-default">
-//           <div
-//             className={`absolute top-0 w-full transition-transform duration-[${duration}ms] ${
-//               rolling ? "animate-roll" : ""
-//             }`}
-//             ref={slotRefs[1]}
-//           >
-//             {fruits.map((fruit, i) => (
-//               <div
-//                 key={i}
-//                 className="h-[70px] flex items-center justify-center"
-//               >
-//                 <span>{fruit}</span>
-//               </div>
-//             ))}
-//           </div>
-//         </section>
-//       </div>
-//       <div className="relative inline-block h-[100px] w-[80px] overflow-hidden">
-//         <section className="relative border-2 border-light-gray w-[70px] h-[70px] bg-gray text-white text-center text-[25px] leading-[60px] cursor-default">
-//           <div
-//             className={`absolute top-0 w-full transition-transform duration-[${duration}ms] ${
-//               rolling ? "animate-roll" : ""
-//             }`}
-//             ref={slotRefs[2]}
-//           >
-//             {fruits.map((fruit, i) => (
-//               <div
-//                 key={i}
-//                 className="h-[70px] flex items-center justify-center"
-//               >
-//                 <span>{fruit}</span>
-//               </div>
-//             ))}
-//           </div>
-//         </section>
-//       </div>
-//       <div
-//         className={`w-[215px] cursor-pointer bg-yellow-400 py-2 text-center text-[20px] rounded-[20px] border-2 border-black ${
-//           rolling ? "animate-blinkingText" : ""
-//         }`}
-//         onClick={!rolling ? roll : null}
-//         disabled={rolling}
-//       >
-//         {rolling ? "Rolling..." : "ROLL"}
-//       </div>
-//       <style>
-//         {`
-//           @keyframes rollingAnimation {
-//             0% { transform: translateY(0); }
-//             100% { transform: translateY(-210px); }
-//           }
-//           .animate-roll {
-//             animation: rollingAnimation 3s linear infinite;
-//           }
-//           @keyframes blinkingText {
-//             0% { color: #000; }
-//             49% { color: #000; }
-//             60% { color: transparent; }
-//             99% { color: transparent; }
-//             100% { color: #000; }
-//           }
-//           .animate-blinkingText {
-//             animation: blinkingText 1.2s infinite;
-//           }
-//         `}
-//       </style>
-//     </div>
-//   );
-// };
+export default SlotGame;

@@ -2,7 +2,6 @@
 // import { assets } from "@/lib/asset-utils";
 import { frameworks } from "@/lib/utils";
 import clsx from "clsx";
-// import Image from "next/image";
 
 export const FrameworkRotation = ({ currentFramework }) => {
   const assets = {
@@ -17,7 +16,6 @@ export const FrameworkRotation = ({ currentFramework }) => {
 
   return (
     <>
-      {/* h-[25px] w-[25px] sm:h-[40px] sm:w-[40px] */}
       <div className="flex justify-center items-center relative">
         {frameworks.map((name, index) => (
           <p

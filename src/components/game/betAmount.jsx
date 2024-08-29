@@ -5,10 +5,12 @@ import token from "@/assets/resource/token.png";
 import { useState } from "react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
+import { useSocketContext } from "@/context/socketContext";
 
-const BetAmount = () => {
+const BetAmount = ({ setGameState }) => {
   const [betAmount, setBetAmount] = useState("");
   const [loading, setLoading] = useState(false);
+  const { socket } = useSocketContext();
 
   function increaseBetAmount() {
     const currentAmount =
@@ -28,8 +30,21 @@ const BetAmount = () => {
   const isBetAmountValid =
     !isNaN(betAmount) && betAmount !== "" && betAmount > 0;
 
-  function onStartGame() {
-    console.log("Starting game with bet amount: ", betAmount);
+  function onStartGame(e) {
+    // console.log("Starting game with bet amount: ", betAmount);
+    e.preventDefault();
+    if (socket) {
+      socket.emit("SET_BET_AMOUNT", { betAmount: parseInt(betAmount) });
+
+      socket.on("MESSAGE", (msg) => {
+        console.log(msg);
+      });
+    }
+
+    setGameState({
+      previous: "SET_BET_AMOUNT",
+      current: "PRESSED_SPIN_BUTTON",
+    });
   }
 
   return (
@@ -69,9 +84,9 @@ const BetAmount = () => {
           size="sm"
           className="group w-[120px] font-pocket cursor-pointer items-center justify-center rounded-xl border text-lg bg-[#F7405E] hover:bg-[#F7405E]/95 border-[#341D1A] transition-all [box-shadow:0px_4px_1px_#AB1C34] active:translate-y-[3px] active:shadow-none"
           disabled={!isBetAmountValid}
-          onClick={onStartGame}
+          onClick={(e) => onStartGame(e)}
         >
-          Start
+          Confirm
         </Button>
       </div>
     </>

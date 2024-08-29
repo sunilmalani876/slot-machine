@@ -9,25 +9,89 @@ import { FrameworkRotation } from "./frameworkRotation";
 import { useAuthContext } from "@/context/authContext";
 import { Button } from "../ui/button";
 import { useNavigate } from "react-router-dom";
+import { useSocketContext } from "@/context/socketContext";
+import Cookies from "js-cookie";
 
 const SlotGame = () => {
   const navigate = useNavigate();
   const [Start, setStart] = useState(false);
-  const [currentFrameWork, setCurrentFrameWork] = useState(Framework[7]);
-  const { currentState, setCurrentState } = useAuthContext();
+
+  const { socket } = useSocketContext();
+  const { getGameState, setGameState, setWinState, getWinState } =
+    useAuthContext();
+
+  const [currentFrameworks, setCurrentFrameworks] = useState([0, 0, 0]); // Holds the final API response
+  const [animationFrameworks, setAnimationFrameworks] = useState([0, 1, 2]); // Holds the rotating frameworks during animation
+
+  const gameState = getGameState();
+
+  const getSlotResults = async () => {
+    // Mock API response; replace this with your actual API call
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        if (socket) {
+          socket.emit("PRESSED_SPIN_BUTTON");
+
+          // socket.on("MESSAGE", (msg) => {
+          //   // console.log("msg-----", msg);
+          // });
+
+          socket.on("WON_LOOSE", (msg) => {
+            // console.log("win  loose ", msg);
+
+            setWinState(msg);
+          });
+
+          setTimeout(() => {
+            const cookieValue = Cookies.get("slotGameState");
+            // console.log("Cookie Value: ", cookieValue);
+
+            if (cookieValue) {
+              const data = JSON.parse(cookieValue);
+              const first = data.combo[0];
+              const second = data.combo[1];
+              const third = data.combo[2];
+              // console.log(data);
+              resolve([first, second, third]);
+            } else {
+              console.error("Cookie 'slotGameState' not found or empty.");
+              resolve([]); // Resolve with empty array if no data
+            }
+          }, 500);
+        }
+      }, 1000); // Simulate network delay
+    });
+  };
 
   useEffect(() => {
-    let currentIndex = 0;
+    let intervalId;
 
     const rotateFrameworks = () => {
-      setCurrentFrameWork(frameworks[currentIndex]);
-      currentIndex = (currentIndex + 1) % frameworks.length;
+      setAnimationFrameworks((prevFrameworks) =>
+        prevFrameworks.map((f) => (f + 1) % frameworks.length)
+      );
+    };
+
+    const fetchSlotResults = async () => {
+      // Start rotating animations
+      intervalId = setInterval(rotateFrameworks, 100);
+
+      // Fetch the API result
+      const response = await getSlotResults();
+
+      // Stop animation and set the final frameworks
+      clearInterval(intervalId);
+      setAnimationFrameworks(response);
+      setCurrentFrameworks(response);
     };
 
     if (Start) {
-      const invalidInterval = setInterval(rotateFrameworks, 100);
-      return () => clearInterval(invalidInterval);
+      fetchSlotResults();
     }
+
+    return () => {
+      clearInterval(intervalId);
+    };
   }, [Start]);
 
   return (
@@ -43,7 +107,7 @@ const SlotGame = () => {
             backgroundImage: `url(${slotMachine})`,
           }}
         >
-          {[...Array(3)].map((_, index) => (
+          {animationFrameworks.map((framework, index) => (
             <div
               key={index}
               className="w-[85px] h-[100px] overflow-clip bg-white border-[1.5px] border-gray-300 rounded-md flex justify-center items-center"
@@ -54,10 +118,7 @@ const SlotGame = () => {
                 className="boxes relative"
               >
                 {Start ? (
-                  <FrameworkRotation
-                    currentFramework={currentFrameWork}
-                    icon={""}
-                  />
+                  <FrameworkRotation currentFramework={frameworks[framework]} />
                 ) : (
                   <p className="text-5xl">❓</p>
                 )}
@@ -66,7 +127,7 @@ const SlotGame = () => {
           ))}
         </div>
 
-        {/* {currentState.current !== "SET_BET_AMOUNT" && (
+        {gameState.previous === "" && (
           <>
             <p className="max-w-sm text-center text-xl text-[] pt-2 font-pocket">
               Please go back and select a game. that you want to be play 🕹.
@@ -79,11 +140,13 @@ const SlotGame = () => {
               Go Back
             </Button>
           </>
-        )} */}
+        )}
 
-        {currentState.current === "SET_BET_AMOUNT" && <BetAmount />}
+        {gameState.current === "SET_BET_AMOUNT" && (
+          <BetAmount setGameState={setGameState} />
+        )}
 
-        {currentState.current !== "SET_BET_AMOUNT" && (
+        {gameState.current === "PRESSED_SPIN_BUTTON" && (
           <div className="mt-5 z-[49] w-full max-w-md flex justify-around">
             <Button
               size="sm"
@@ -96,7 +159,7 @@ const SlotGame = () => {
               size="sm"
               className="group w-[120px] font-pocket cursor-pointer items-center justify-center rounded-xl border text-lg bg-[#7A85F4] hover:bg-[#7A85F4]/95 border-[#341D1A] transition-all [box-shadow:0px_4px_1px_#515895] active:translate-y-[3px] active:shadow-none"
               onClick={() => setStart(true)}
-              disabled={Start}
+              // disabled={Start}
             >
               Spin
             </Button>
