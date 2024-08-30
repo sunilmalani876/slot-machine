@@ -23,7 +23,7 @@ const SignIn = () => {
   const [loading, setLoading] = useState(false);
   const { pathname } = useLocation();
   const navigate = useNavigate();
-  const { SignUp, SignIn, setToken, LogOut } = useAuthContext();
+  const { SignUp, SignIn, setToken, LogOut, setGameState } = useAuthContext();
 
   const formSchema =
     pathname === "/signup"
@@ -76,10 +76,7 @@ const SignIn = () => {
           setLoading(false);
 
           form.reset();
-
-          navigate("/signin", {
-            replace: true,
-          });
+          navigate("/signin");
         }
       } else {
         const result = await SignIn(newData);
@@ -89,6 +86,7 @@ const SignIn = () => {
           Cookies.set("token", result.data.tokens.accessToken);
           Cookies.set("userId", JSON.stringify(result.data.user));
           setToken(result.data.tokens.accessToken);
+          setGameState("START_GAME");
           toast.success("user login successfully");
           navigate(`/game/${result.data.user.id}`, {
             replace: true,

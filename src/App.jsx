@@ -33,12 +33,11 @@ function App() {
 
           <Route
             path="/game/:id"
-            // element={<Game />}
             element={token ? <Game /> : <Navigate to="/signin" />}
-          >
-            <Route path="" element={<StartGame />} />
-            <Route path="play" element={<SlotGame />} />
-          </Route>
+          />
+          {/* <Route path="" element={<StartGame />} />
+            <Route path="play" element={<SlotGame />} /> */}
+          {/* </Route> */}
           <Route path="/dashboard" element={<p>dashboard page</p>} />
           <Route path="*" element={<p>No Page Found</p>} />
         </Routes>

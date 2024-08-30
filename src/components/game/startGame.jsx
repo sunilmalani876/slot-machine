@@ -3,32 +3,17 @@ import avatar2 from "@/assets/resource/avatar2.png";
 import youtube from "@/assets/resource/youtube.png";
 
 import { useAuthContext } from "@/context/authContext";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "../ui/button";
 import { useSocketContext } from "@/context/socketContext";
 import { useEffect } from "react";
 import { toast } from "sonner";
 
 const StartGame = () => {
+  const navigate = useNavigate();
   const { setGameState, getGameState } = useAuthContext();
   const { socket } = useSocketContext();
   const CurrentState = getGameState();
-
-  // useEffect(() => {
-  //   if (socket) {
-  //     console.log("q");
-  //     socket.emit("START_GAME", (message) => {
-  //       console.log("Received START_GAME message:", message);
-  //       // if (CurrentState.previous === "") {
-  //       //   // Handle the message
-  //       // }
-  //     });
-
-  //     return () => {
-  //       socket.off("START_GAME");
-  //     };
-  //   }
-  // }, [socket, CurrentState.previous]);
 
   useEffect(() => {
     // Set up the socket listener when the component mounts
@@ -42,16 +27,34 @@ const StartGame = () => {
     };
   }, []); // Empty dependency array means this runs once on mount
 
-  const handleClick = async (e) => {
+  const handleStartGame = (e) => {
     e.preventDefault();
 
-    // Emit an event to the server if needed
-    // socket.emit('START_GAME');
+    // Flag to determine if an error occurred
+    let errorOccurred = false;
 
-    setGameState({
-      previous: "START_GAME",
-      current: "SET_BET_AMOUNT",
+    // Emit the START_GAME event
+    socket?.emit("START_GAME");
+
+    socket?.once("ERROR", (msg) => {
+      // console.error("Error received from server:", msg);
+      toast.error(msg);
+      errorOccurred = true;
     });
+
+    // Set up message handler
+    socket?.on("MESSAGE", (msg) => {
+      if (!errorOccurred) {
+        // Only process messages if no error occurred
+        // console.log("Message received from server:", msg);
+        toast.message(msg);
+      }
+    });
+
+    // Check if an error occurred before updating the game state
+    if (!errorOccurred) {
+      setGameState("SET_BET_AMOUNT");
+    }
   };
 
   return (
@@ -71,27 +74,34 @@ const StartGame = () => {
 
         <div className="absolute -right-5">
           <Button
-            onClick={(e) => {
-              e.preventDefault();
+            // onClick={(e) => {
+            //   e.preventDefault();
 
-              socket?.emit("START_GAME");
+            //   socket?.emit("START_GAME");
 
-              socket?.on("MESSAGE", (msg) => {
-                toast.message(msg);
-              });
+            //   socket?.on("ERROR", (msg) => {
+            //     console.log(msg);
 
-              setGameState({
-                previous: "START_GAME",
-                current: "SET_BET_AMOUNT",
-              });
-            }}
-            // onClick={handleClick}
+            //     return;
+            //   });
+
+            //   socket?.on("MESSAGE", (msg) => {
+            //     toast.message(msg);
+            //     return;
+            //   });
+
+            //   setGameState({
+            //     previous: "START_GAME",
+            //     current: "SET_BET_AMOUNT",
+            //   });
+            // }}
+            onClick={handleStartGame}
             size="sm"
             className="group cursor-pointer items-center justify-center rounded-xl border text-lg font-medium bg-[#7A85F4] hover:bg-[#7A85F4]/95 border-[#341D1A] transition-all [box-shadow:0px_4px_1px_#515895] active:translate-y-[3px] active:shadow-none"
           >
-            <Link to="play">
-              <img src={youtube} alt="youtube" className="" width={17} />
-            </Link>
+            {/* <Link to="play"> */}
+            <img src={youtube} alt="youtube" className="" width={17} />
+            {/* </Link> */}
           </Button>
         </div>
       </div>

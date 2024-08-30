@@ -11,12 +11,10 @@ export const AuthContextProvider = ({ children }) => {
 
   const [token, setToken] = useState(Cookies.get("token") || null);
   const [UserId, setUserId] = useState(Cookies.get("userId") || null);
-  const [currentState, setCurrentState] = useState({
-    previous: "",
-    current: "",
-  });
+  const [currentState, setCurrentState] = useState("START_GAME");
   const [slotGameState, setSlotGameState] = useState(null);
 
+  const [currentGameAmount, setCurrentGameAmount] = useState(null);
   const SignUp = async (data) => {
     const res = await fetch(`${BASE_URL}/register`, {
       method: "POST",
@@ -72,15 +70,17 @@ export const AuthContextProvider = ({ children }) => {
   };
 
   const setGameState = (data) => {
-    setCurrentState({ previous: data.previous, current: data.current });
+    console.log("setGameState", data);
+    setCurrentState(data);
 
-    Cookies.set("userState", JSON.stringify(data));
+    Cookies.set("userState", data);
   };
 
   const getGameState = () => {
     const data = Cookies.get("userState");
+    console.log("getGameState", data);
 
-    return data ? JSON.parse(data) : { previous: "", current: "" };
+    return data ? data : "";
   };
 
   const setWinState = (data) => {
@@ -93,6 +93,19 @@ export const AuthContextProvider = ({ children }) => {
     const data = Cookies.get("slotGameState");
 
     return slotGameState ? JSON.parse(slotGameState) : JSON.parse(data);
+  };
+
+  const addBalance = async (data) => {
+    // const res = await fetch(`${BASE_URL}/addBalance`, {
+    //   method: "PUT",
+    //   headers: {
+    //     Accept: "application/json",
+    //     "Content-type": "application/json",
+    //   },
+    //   body: JSON.stringify(data),
+    // });
+    // const result = await res.json();
+    // return result;
   };
 
   // useEffect(() => {
@@ -134,6 +147,9 @@ export const AuthContextProvider = ({ children }) => {
         getGameState,
         setWinState,
         getWinState,
+        setCurrentGameAmount,
+        currentGameAmount,
+        addBalance,
       }}
     >
       {children}

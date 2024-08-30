@@ -1,30 +1,28 @@
 /* eslint-disable no-unused-vars */
 import slot from "@/assets/resource/slot.png";
 import slotMachine from "@/assets/resource/slotMachine.png";
-import { Framework, frameworks } from "@/lib/utils";
+import token from "@/assets/resource/token.png";
+import { useAuthContext } from "@/context/authContext";
+import { useSocketContext } from "@/context/socketContext";
+import { frameworks } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "../ui/button";
 import BetAmount from "./betAmount";
 import { FrameworkRotation } from "./frameworkRotation";
-import { useAuthContext } from "@/context/authContext";
-import { Button } from "../ui/button";
-import { useNavigate } from "react-router-dom";
-import { useSocketContext } from "@/context/socketContext";
+
 import Cookies from "js-cookie";
 
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog";
+import { toast } from "sonner";
 
 const SlotGame = () => {
   const navigate = useNavigate();
   const [Start, setStart] = useState(false);
   const [DialogOpen, setDialogOpen] = useState(false);
+  const { setCurrentGameAmount, currentGameAmount, currentState } =
+    useAuthContext();
 
   const { socket } = useSocketContext();
   const { getGameState, setGameState, setWinState, getWinState } =
@@ -40,43 +38,102 @@ const SlotGame = () => {
     return new Promise((resolve) => {
       setTimeout(() => {
         if (socket) {
-          socket.emit("PRESSED_SPIN_BUTTON");
+          socket?.emit("PRESSED_SPIN_BUTTON");
 
-          socket.on("WON_LOOSE", (msg) => {
+          socket?.on("MESSAGE", (msg) => {
             console.log(msg);
-            Cookies.set("slotGameState", JSON.stringify(msg));
-
-            // setWinState(msg);
           });
 
-          setTimeout(() => {
-            // Debugging line to check if cookie is retrieved
-            console.log("Retrieving cookie...");
-            const cookieValue = Cookies.get("slotGameState");
+          socket?.on("WON_LOOSE", (msg) => {
+            console.log(msg);
+            if (msg) {
+              const first = msg.combo[0];
+              const secound = msg.combo[1];
+              const third = msg.combo[2];
+              Cookies.set("slotGameState", JSON.stringify(msg));
 
-            // Debugging line to check the retrieved cookie value
-            console.log("Cookie Value: ", cookieValue);
+              socket?.emit("GET_CURRENT_STATE", (msg) => {
+                console.log("emit get CURRENT_STATE", msg);
+              });
 
-            if (cookieValue) {
-              const data = JSON.parse(cookieValue);
-              console.log(data);
-              const first = data.combo[0];
-              const second = data.combo[1];
-              const third = data.combo[2];
-              resolve([first, second, third]);
+              socket?.on("CURRENT_STATE", (msg) => {
+                setCurrentGameAmount(msg);
+                console.log("emit CURRENT_STATE", msg);
+              });
+
+              resolve([first, secound, third]); // Example response
 
               setTimeout(() => {
                 setDialogOpen(true);
-              }, 500);
-            } else {
-              console.error("Cookie 'slotGameState' not found or empty.");
-              resolve([]); // Resolve with empty array if no data
+              }, 700);
+
+              return;
             }
-          }, 500);
+          });
+
+          socket.on("ERROR", (msg) => {
+            console.log(msg);
+            toast.error(msg);
+            resolve([]); // Example response
+            // emit:GET_CURRENT_STATE
+            // listen/on:CURRENT_STATE
+          });
         }
-      }, 700); // Simulate network delay
+      }, 1500); // Simulate network delay
     });
   };
+
+  // const getSlotResults = async () => {
+  //   // Mock API response; replace this with your actual API call
+  //   return new Promise((resolve) => {
+  //     setTimeout(() => {
+  //       if (socket) {
+  //         socket?.emit("PRESSED_SPIN_BUTTON");
+
+  //         socket?.on("MESSAGE", (msg) => {
+  //           console.log(msg);
+  //         });
+
+  //         socket?.on("WON_LOOSE", (msg) => {
+  //           console.log(msg);
+  //           Cookies.set("slotGameState", JSON.stringify(msg));
+
+  //           // setWinState(msg);
+  //         });
+
+  //         socket.on("ERROR", (msg) => {
+  //           console.log(msg);
+  //         });
+
+  //         setTimeout(() => {
+  //           // Debugging line to check if cookie is retrieved
+  //           console.log("Retrieving cookie...");
+  //           // const cookieValue = Cookies.get("slotGameState");
+
+  //           // Debugging line to check the retrieved cookie value
+  //           // console.log("Cookie Value: ", cookieValue);
+
+  //           // if (cookieValue) {
+  //           //   const data = JSON.parse(cookieValue);
+  //           //   console.log(data);
+  //           //   const first = data.combo[0];
+  //           //   const second = data.combo[1];
+  //           //   const third = data.combo[2];
+  //           resolve([1, 1, 1]);
+
+  //           setTimeout(() => {
+  //             setDialogOpen(true);
+  //           }, 500);
+  //           // } else {
+  //           //   console.error("Cookie 'slotGameState' not found or empty.");
+  //           //   toast.error("somthing wrong");
+  //           //   resolve([]); // Resolve with empty array if no data
+  //           // }
+  //         }, 500);
+  //       }
+  //     }, 1500); // Simulate network delay
+  //   });
+  // };
 
   // const getSlotResults = async () => {
   //   // Mock API response; replace this with your actual API call
@@ -145,7 +202,7 @@ const SlotGame = () => {
     return () => {
       clearInterval(intervalId);
     };
-  }, [Start]);
+  }, [Start, socket]);
 
   return (
     <div className="w-full z-50">
@@ -153,6 +210,7 @@ const SlotGame = () => {
         <div className="w-full max-w-sm flex justify-center items-center">
           <img src={slot} alt="slot" width={200} />
         </div>
+
         {/* GAME */}
         <div
           className="w-full max-w-md aspect-video bg-center bg-no-repeat bg-cover flex relative items-center justify-around px-8"
@@ -180,7 +238,7 @@ const SlotGame = () => {
           ))}
         </div>
 
-        {gameState.previous === "" && (
+        {/* {gameState.previous === "" && (
           <>
             <p className="max-w-sm text-center text-xl text-[] pt-2 font-pocket">
               Please go back and select a game. that you want to be play 🕹.
@@ -193,13 +251,13 @@ const SlotGame = () => {
               Go Back
             </Button>
           </>
-        )}
+        )} */}
 
-        {gameState.current === "SET_BET_AMOUNT" && (
+        {currentState === "SET_BET_AMOUNT" && (
           <BetAmount setGameState={setGameState} />
         )}
 
-        {gameState.current === "PRESSED_SPIN_BUTTON" && (
+        {currentState === "PRESSED_SPIN_BUTTON" && (
           <div className="mt-5 z-[49] w-full max-w-md flex justify-around">
             <Button
               size="sm"
@@ -221,15 +279,23 @@ const SlotGame = () => {
 
         <Dialog open={DialogOpen} setOpen={setDialogOpen} className="z-50">
           {/* <DialogTrigger className="z-50">Open</DialogTrigger> */}
-          {/* <DialogContent WIN={false}>
-            <DialogHeader>
-              <DialogTitle>Are you absolutely sure?</DialogTitle>
-              <DialogDescription>
-                This action cannot be undone. This will permanently delete your
-                account and remove your data from our servers.
-              </DialogDescription>
+          <DialogContent
+            WIN={true}
+            className="bg-transparent bg-cover bg-no-repeat aspect-video border-none shadow-none"
+          >
+            <DialogHeader className="w-full text-black font-bold flex justify-center text-lg items-center py-1">
+              <div className="w-full pt-5 flex justify-center gap-1 items-center">
+                <img
+                  src={token}
+                  alt="sub"
+                  className=""
+                  width={25}
+                  height={25}
+                />
+                <p className="text-xl">2323</p>
+              </div>
             </DialogHeader>
-          </DialogContent> */}
+          </DialogContent>
         </Dialog>
       </div>
     </div>

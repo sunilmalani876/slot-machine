@@ -6,6 +6,7 @@ import { useState } from "react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { useSocketContext } from "@/context/socketContext";
+import { toast } from "sonner";
 
 const BetAmount = ({ setGameState }) => {
   const [betAmount, setBetAmount] = useState("");
@@ -31,19 +32,25 @@ const BetAmount = ({ setGameState }) => {
     !isNaN(betAmount) && betAmount !== "" && betAmount > 0;
 
   function onStartGame(e) {
-    // console.log("Starting game with bet amount: ", betAmount);
     e.preventDefault();
-    if (socket) {
-      socket.emit("SET_BET_AMOUNT", { betAmount: parseInt(betAmount) });
+    let errorOccurred = false;
+    // console.log("Starting game with bet amount: ", betAmount);
 
-      socket.on("MESSAGE", (msg) => {
-        console.log(msg);
-      });
-    }
+    socket?.emit("SET_BET_AMOUNT", { betAmount: parseInt(betAmount) });
 
-    setGameState({
-      previous: "SET_BET_AMOUNT",
-      current: "PRESSED_SPIN_BUTTON",
+    socket?.once("ERROR", (msg) => {
+      // console.error("Error received from server:", msg);
+      console.log(msg);
+      toast.error(msg);
+      errorOccurred = true;
+    });
+
+    socket?.on("MESSAGE", (msg) => {
+      if (!errorOccurred) {
+        // Only process messages if no error occurred
+        toast.message(msg);
+        setGameState("PRESSED_SPIN_BUTTON");
+      }
     });
   }
 

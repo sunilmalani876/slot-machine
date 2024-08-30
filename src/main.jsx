@@ -7,12 +7,12 @@ import { AuthContextProvider } from "./context/authContext.jsx";
 import { Toaster } from "@/components/ui/sonner";
 
 createRoot(document.getElementById("root")).render(
-  <StrictMode>
-    <AuthContextProvider>
-      <SocketContextProvider>
-        <App />
-        <Toaster />
-      </SocketContextProvider>
-    </AuthContextProvider>
-  </StrictMode>
+  // <StrictMode>
+  <AuthContextProvider>
+    <SocketContextProvider>
+      <App />
+      <Toaster />
+    </SocketContextProvider>
+  </AuthContextProvider>
+  // </StrictMode>
 );

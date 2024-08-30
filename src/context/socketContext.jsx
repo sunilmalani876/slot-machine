@@ -9,7 +9,7 @@ export const SocketContext = createContext();
 
 export const SocketContextProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
-  const { UserId, token, getUser } = useAuthContext();
+  const { UserId, token, getUser, setCurrentGameAmount } = useAuthContext();
   const [CurrentState, setCurrentState] = useState({
     pre: "",
     curr: "START",
@@ -35,7 +35,19 @@ export const SocketContextProvider = ({ children }) => {
         console.log(mess);
       });
 
-      return () => socket.close();
+      // socket?.emit("GET_CURRENT_STATE", (msg) => {
+      //   console.log("emit get CURRENT_STATE", msg);
+      // });
+
+      // socket?.on("CURRENT_STATE", (msg) => {
+      //   setCurrentGameAmount(msg);
+      //   console.log("emit CURRENT_STATE", msg);
+      // });
+
+      return () => {
+        socket.close();
+        // socket?.off("CURRENT_STATE");
+      };
     } else {
       if (socket) {
         socket.close();
