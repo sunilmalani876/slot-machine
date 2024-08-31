@@ -4,8 +4,11 @@ import avatar from "@/assets/resource/avatar.png";
 import bottom from "@/assets/resource/bottom-wave.png";
 import { Button } from "./ui/button";
 import { Link } from "react-router-dom";
+import { useAuthContext } from "@/context/authContext";
 
 const Home = () => {
+  const { currentUser } = useAuthContext();
+
   return (
     <div className="w-full min-h-screen relative overflow-y-clip bg-[#FFA013] flex">
       <img src={top} alt="top" className="w-full fixed top-0" />
@@ -43,20 +46,31 @@ const Home = () => {
           today and experience the ultimate in luxury and fun!
         </p>
 
-        <div className="mt-4 flex gap-4">
-          <Button
-            asChild
-            className="group font-pocket relative inline-flex items-center justify-center overflow-hidden rounded-xl border bg-transparent px-6 text-lg font-medium bg-white hover:bg-neutral-100 border-[#341D1A] text-black transition-all [box-shadow:0px_4px_1px_#515895] active:translate-y-[3px] active:shadow-none"
-          >
-            <Link to="/signin">Log-In</Link>
-          </Button>
-          <Button
-            asChild
-            className="group font-pocket text-lg relative inline-flex items-center justify-center overflow-hidden rounded-xl border bg-transparent px-6 font-medium bg-white hover:bg-neutral-100 border-[#341D1A] text-black transition-all [box-shadow:0px_4px_1px_#515895] active:translate-y-[3px] active:shadow-none"
-          >
-            <Link to="/signup">Sign-up</Link>
-          </Button>
-        </div>
+        {currentUser ? (
+          <div>
+            <Button
+              asChild
+              className="group font-pocket relative inline-flex items-center justify-center overflow-hidden rounded-xl border bg-transparent px-6 text-lg font-medium bg-white hover:bg-neutral-100 border-[#341D1A] text-black transition-all [box-shadow:0px_4px_1px_#515895] active:translate-y-[3px] active:shadow-none"
+            >
+              <Link to={`/game/${currentUser?._id}`}>Start</Link>
+            </Button>
+          </div>
+        ) : (
+          <div className="mt-4 flex gap-4">
+            <Button
+              asChild
+              className="group font-pocket relative inline-flex items-center justify-center overflow-hidden rounded-xl border bg-transparent px-6 text-lg font-medium bg-white hover:bg-neutral-100 border-[#341D1A] text-black transition-all [box-shadow:0px_4px_1px_#515895] active:translate-y-[3px] active:shadow-none"
+            >
+              <Link to="/signin">Log-In</Link>
+            </Button>
+            <Button
+              asChild
+              className="group font-pocket text-lg relative inline-flex items-center justify-center overflow-hidden rounded-xl border bg-transparent px-6 font-medium bg-white hover:bg-neutral-100 border-[#341D1A] text-black transition-all [box-shadow:0px_4px_1px_#515895] active:translate-y-[3px] active:shadow-none"
+            >
+              <Link to="/signup">Sign-up</Link>
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );

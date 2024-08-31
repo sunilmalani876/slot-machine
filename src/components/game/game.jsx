@@ -37,12 +37,12 @@ const Game = () => {
             </Link>
           </Button>
 
-          <Button
+          {/* <Button
             size="sm"
             className="group font-pocket uppercase relative inline-flex items-center justify-center overflow-hidden rounded-xl border bg-transparent px-6 text-lg font-medium bg-white hover:bg-neutral-100 border-[#341D1A] text-black transition-all [box-shadow:0px_4px_1px_#515895] active:translate-y-[3px] active:shadow-none"
           >
             Deposit
-          </Button>
+          </Button> */}
         </div>
       </div>
       <img

@@ -20,8 +20,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 const SlotGame = () => {
+  const navigate = useNavigate();
   const [Start, setStart] = useState(false);
   const [DialogOpen, setDialogOpen] = useState(false);
   const [winLoss, setWinLoss] = useState(null);
@@ -39,7 +41,6 @@ const SlotGame = () => {
 
   const [currentFrameworks, setCurrentFrameworks] = useState([0, 0, 0]); // Holds the final API response
   const [animationFrameworks, setAnimationFrameworks] = useState([0, 1, 2]); // Holds the rotating frameworks during animation
-
   const gameState = getGameState();
 
   const getSlotResults = async () => {
@@ -233,6 +234,12 @@ const SlotGame = () => {
       if (socket) {
         socket.emit("EXIT_GAME");
         socket.emit("EXIT_YES");
+
+        socket.on("MESSAGE", (msg) => {
+          console.log(msg);
+          setDialogOpen(false);
+          navigate("/");
+        });
       }
     }
   };

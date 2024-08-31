@@ -55,7 +55,6 @@ const BetAmount = ({ setGameState }) => {
 
   return (
     <>
-      {" "}
       <div className="mt-3 z-[49] w-full max-w-md flex justify-around items-center gap-2">
         <Button
           className="group font-pocket relative inline-flex items-center justify-center overflow-hidden rounded-xl border bg-transparent px-6 text-lg font-medium bg-white hover:bg-neutral-100 border-[#341D1A] text-black transition-all [box-shadow:0px_4px_1px_#515895] active:translate-y-[3px] active:shadow-none"
