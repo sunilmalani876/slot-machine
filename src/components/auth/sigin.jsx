@@ -8,8 +8,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import bottom from "@/assets/resource/bottom-wave.png";
 
 import { z } from "zod";
+
+import logo from "@/assets/resource/logo.png";
+import machine from "@/assets/resource/machine.png";
+import playButton from "@/assets/resource/play-button.png";
 
 import { useAuthContext } from "@/context/authContext";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -102,113 +107,105 @@ const SignIn = () => {
   }
 
   return (
-    <div className="w-full min-h-screen flex items-center">
-      <div className="w-full text-white py-2.5 sm:px-0 h-full flex justify-center items-center">
-        <div className="w-full max-sm:flex-col max-sm:items-center max-sm:gap-8 border-slate-300 rounded-md border-[1px] shadow-sm shadow-slate-700 py-5 flex justify-center max-w-md relative">
-          {/* <div className="sm:self-end">
-            <img
-              src={login}
-              alt="login"
-              className="object-cover w-[340px] z-20 sm:w-[340px]"
+    <div className="w-full min-h-screen bg-[#FFDC58] flex justify-center items-center">
+      <img
+        src={machine}
+        alt="login"
+        width={100}
+        className="object-cover absolute left-4 top-4"
+      />
+      <img
+        src={playButton}
+        alt="login"
+        width={50}
+        className="object-cover absolute right-7 rotate-[-40deg] top-7"
+      />
+      <img
+        src={bottom}
+        alt="top"
+        className="w-full fixed bottom-0 sm:-bottom-3"
+      />
+      <div className="w-full max-sm:px-4 sm:max-w-sm flex z-10 flex-col items-center">
+        <img src={logo} alt="top" className="object-cover" width={125} />
+        <Form {...form} className="w-full">
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-2 w-full"
+          >
+            {pathname === "/signup" && (
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm text-black">
+                      Username
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="username"
+                        className="input"
+                        {...field}
+                      />
+                    </FormControl>
+
+                    <FormMessage className="text-xs" />
+                  </FormItem>
+                )}
+              />
+            )}
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm text-black">Email</FormLabel>
+                  <FormControl>
+                    <Input placeholder="email" {...field} className="input" />
+                  </FormControl>
+
+                  <FormMessage className="text-xs" />
+                </FormItem>
+              )}
             />
-          </div> */}
-
-          <div className="max-sm:w-full max-sm:gap-5 flex-1 flex flex-col items-center gap-3">
-            <div className="w-full max-w-[290px] flex flex-col max-sm:py-0 items-center gap-2">
-              <p className="text-3xl font-bold text-black">Welcom Back!</p>
-              <p className="text-xs font-bold text-gray-500">
-                Please enter your details.
-              </p>
-              <Form {...form} className="w-full">
-                <form
-                  onSubmit={form.handleSubmit(onSubmit)}
-                  className="space-y-2 w-full"
-                >
-                  {pathname === "/signup" && (
-                    <FormField
-                      control={form.control}
-                      name="name"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-sm text-black">
-                            Username
-                          </FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="username"
-                              className="input"
-                              {...field}
-                            />
-                          </FormControl>
-
-                          <FormMessage className="text-xs" />
-                        </FormItem>
-                      )}
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm text-black">Password</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="password"
+                      {...field}
+                      className="input"
                     />
-                  )}
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-sm text-black">
-                          Email
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="email"
-                            {...field}
-                            className="input"
-                          />
-                        </FormControl>
+                  </FormControl>
 
-                        <FormMessage className="text-xs" />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="password"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-sm text-black">
-                          Password
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="password"
-                            {...field}
-                            className="input"
-                          />
-                        </FormControl>
-
-                        <FormMessage className="text-xs" />
-                      </FormItem>
-                    )}
-                  />
-                  <div className="text-gray-500 hover:text-black text-sm flex justify-end items-center font-bold underline decoration-dashed outline-offset-8">
-                    {pathname === "/signin" ? (
-                      <Link to="/signup">Sign-Up</Link>
-                    ) : (
-                      <Link to="/signin">Sign-In</Link>
-                    )}
-                  </div>
-
-                  <div className="w-full pt-2">
-                    <Button
-                      disabled={loading}
-                      type="submit"
-                      size="sm"
-                      className="w-full"
-                    >
-                      {loading ? "Submiting..." : "Submit"}
-                    </Button>
-                  </div>
-                </form>
-              </Form>
+                  <FormMessage className="text-xs" />
+                </FormItem>
+              )}
+            />
+            <div className="text-gray-500 hover:text-black text-sm flex justify-end items-center font-bold underline decoration-dashed outline-offset-8">
+              {pathname === "/signin" ? (
+                <Link to="/signup">Sign-Up</Link>
+              ) : (
+                <Link to="/signin">Sign-In</Link>
+              )}
             </div>
-          </div>
-        </div>
+
+            <div className="w-full pt-2">
+              <Button
+                disabled={loading}
+                type="submit"
+                size="sm"
+                className="group w-full font-pocket text-lg relative inline-flex items-center justify-center overflow-hidden rounded-xl border bg-transparent px-6 font-medium bg-white hover:bg-neutral-100 border-[#341D1A] text-black transition-all [box-shadow:0px_4px_1px_#515895] active:translate-y-[3px] active:shadow-none"
+              >
+                {loading ? "Submiting..." : "Submit"}
+              </Button>
+            </div>
+          </form>
+        </Form>
       </div>
     </div>
   );
