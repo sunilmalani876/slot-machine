@@ -1,52 +1,19 @@
 import bottom from "@/assets/resource/bottom-wave.png";
 import profile from "@/assets/resource/profile.png";
 
-import { Link, Outlet, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Logo from "./logo";
 
-import { Button } from "../ui/button";
-import { useEffect } from "react";
-import { useSocketContext } from "@/context/socketContext";
 import { useAuthContext } from "@/context/authContext";
-import StartGame from "./startGame";
+import { Button } from "../ui/button";
 import SlotGame from "./slot-game";
+import StartGame from "./startGame";
 
 const Game = () => {
-  const { pathname } = useLocation();
-  const { socket } = useSocketContext();
-  const {
-    setCurrentGameAmount,
-    currentGameAmount,
-    currentState,
-    getGameState,
-  } = useAuthContext();
+  const { currentState, getGameState } = useAuthContext();
 
   const state = getGameState();
   console.log(state);
-
-  // useEffect(() => {
-  //   // Ensure socket is available before setting up listeners
-  //   if (socket) {
-  //     // Emit the GET_CURRENT_STATE event
-  //     socket.emit("GET_CURRENT_STATE", (msg) => {
-  //       // console.log("emit get CURRENT_STATE response:", msg);
-  //     });
-
-  //     // Set up CURRENT_STATE event listener
-  //     const handleCurrentState = (msg) => {
-  //       console.log("CURRENT_STATE event received:", msg);
-  //       setCurrentGameAmount(msg);
-  //     };
-
-  //     socket.on("CURRENT_STATE", handleCurrentState);
-
-  //     // Cleanup function to remove event listener when component unmounts or socket changes
-  //     return () => {
-  //       console.log("Cleaning up socket listeners");
-  //       socket.off("CURRENT_STATE", handleCurrentState);
-  //     };
-  //   }
-  // }, [socket]);
 
   return (
     <div

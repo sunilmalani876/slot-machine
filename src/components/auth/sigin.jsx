@@ -13,17 +13,17 @@ import { z } from "zod";
 
 import { useAuthContext } from "@/context/authContext";
 import { zodResolver } from "@hookform/resolvers/zod";
+import Cookies from "js-cookie";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import Cookies from "js-cookie";
 
 const SignIn = () => {
   const [loading, setLoading] = useState(false);
   const { pathname } = useLocation();
   const navigate = useNavigate();
-  const { SignUp, SignIn, setToken, LogOut, setGameState } = useAuthContext();
+  const { SignUp, SignIn, setToken, setGameState } = useAuthContext();
 
   const formSchema =
     pathname === "/signup"

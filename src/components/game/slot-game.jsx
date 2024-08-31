@@ -7,26 +7,35 @@ import { useSocketContext } from "@/context/socketContext";
 import { frameworks } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Button } from "../ui/button";
 import BetAmount from "./betAmount";
 import { FrameworkRotation } from "./frameworkRotation";
 
 import Cookies from "js-cookie";
 
-import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { toast } from "sonner";
 
 const SlotGame = () => {
-  const navigate = useNavigate();
   const [Start, setStart] = useState(false);
   const [DialogOpen, setDialogOpen] = useState(false);
-  const { setCurrentGameAmount, currentGameAmount, currentState } =
-    useAuthContext();
+  const [winLoss, setWinLoss] = useState(null);
+  const {
+    setCurrentGameAmount,
+    currentGameAmount,
+    getGameState,
+    setGameState,
+    currentState,
+  } = useAuthContext();
+
+  console.log("currentGameAmount", currentGameAmount);
 
   const { socket } = useSocketContext();
-  const { getGameState, setGameState, setWinState, getWinState } =
-    useAuthContext();
 
   const [currentFrameworks, setCurrentFrameworks] = useState([0, 0, 0]); // Holds the final API response
   const [animationFrameworks, setAnimationFrameworks] = useState([0, 1, 2]); // Holds the rotating frameworks during animation
@@ -45,8 +54,9 @@ const SlotGame = () => {
           });
 
           socket?.on("WON_LOOSE", (msg) => {
-            console.log(msg);
+            console.log("WON_LOOSE", msg);
             if (msg) {
+              setWinLoss(msg);
               const first = msg.combo[0];
               const secound = msg.combo[1];
               const third = msg.combo[2];
@@ -62,6 +72,7 @@ const SlotGame = () => {
               });
 
               resolve([first, secound, third]); // Example response
+              // resolve([1, 1, 1]);
 
               setTimeout(() => {
                 setDialogOpen(true);
@@ -70,6 +81,8 @@ const SlotGame = () => {
               return;
             }
           });
+
+          // resolve([1, 1, 1]);
 
           socket.on("ERROR", (msg) => {
             console.log(msg);
@@ -204,6 +217,26 @@ const SlotGame = () => {
     };
   }, [Start, socket]);
 
+  const handleGame = (value, e) => {
+    e.preventDefault();
+    if (value === "PLAY_AGAIN") {
+      if (socket) {
+        socket.emit("X", { x: "PRESSED_PLAY_AGAIN" });
+        socket.emit("PRESSED_PLAY_AGAIN");
+        socket.on("MESSAGE", (msg) => {
+          console.log(msg);
+          setDialogOpen(false);
+          setGameState("START_GAME");
+        });
+      }
+    } else {
+      if (socket) {
+        socket.emit("EXIT_GAME");
+        socket.emit("EXIT_YES");
+      }
+    }
+  };
+
   return (
     <div className="w-full z-50">
       <div className="w-full flex flex-col items-center justify-center">
@@ -278,21 +311,44 @@ const SlotGame = () => {
         )}
 
         <Dialog open={DialogOpen} setOpen={setDialogOpen} className="z-50">
-          {/* <DialogTrigger className="z-50">Open</DialogTrigger> */}
           <DialogContent
-            WIN={true}
-            className="bg-transparent bg-cover bg-no-repeat aspect-video border-none shadow-none"
+            WIN={winLoss?.win ? false : true}
+            close={false}
+            className="w-full max-w-[420px] bg-transparent bg-cover bg-no-repeat aspect-video border-none shadow-none outline-none focus-visible:ring-0 flex flex-col items-center justify-center"
           >
-            <DialogHeader className="w-full text-black font-bold flex justify-center text-lg items-center py-1">
-              <div className="w-full pt-5 flex justify-center gap-1 items-center">
+            <DialogHeader className="w-full text-black font-bold flex flex-col justify-center text-lg items-center py-1">
+              <DialogTitle
+                className={`w-full pt-12 flex justify-center gap-3 items-center`}
+              >
                 <img
                   src={token}
                   alt="sub"
-                  className=""
+                  className="object-cover -mb-1.5"
                   width={25}
                   height={25}
                 />
-                <p className="text-xl">2323</p>
+                <span className="text-2xl font-bold font-sans">
+                  {parseInt(
+                    currentGameAmount?.gameState?.principalBalanceBeforeBet
+                  ) -
+                    parseInt(
+                      currentGameAmount?.gameState?.principalBalanceAfterBet
+                    )}
+                </span>
+              </DialogTitle>
+              <div className="space-x-4 pt-2">
+                <Button
+                  onClick={(e) => handleGame("PLAY_AGAIN", e)}
+                  className="group font-pocket relative inline-flex items-center justify-center overflow-hidden rounded-xl border bg-transparent px-4 text-lg font-medium bg-white hover:bg-neutral-100 border-[#341D1A] text-black transition-all [box-shadow:0px_4px_1px_#515895] active:translate-y-[3px] active:shadow-none"
+                >
+                  Play again
+                </Button>
+                <Button
+                  onClick={(e) => handleGame("EXIT_GAME", e)}
+                  className="group font-pocket relative inline-flex items-center justify-center overflow-hidden rounded-xl border bg-transparent px-4 text-lg font-medium bg-white hover:bg-neutral-100 border-[#341D1A] text-black transition-all [box-shadow:0px_4px_1px_#515895] active:translate-y-[3px] active:shadow-none"
+                >
+                  Exit game
+                </Button>
               </div>
             </DialogHeader>
           </DialogContent>

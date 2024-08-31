@@ -3,29 +3,14 @@ import avatar2 from "@/assets/resource/avatar2.png";
 import youtube from "@/assets/resource/youtube.png";
 
 import { useAuthContext } from "@/context/authContext";
-import { Link, useNavigate } from "react-router-dom";
-import { Button } from "../ui/button";
 import { useSocketContext } from "@/context/socketContext";
-import { useEffect } from "react";
+import { Link } from "react-router-dom";
 import { toast } from "sonner";
+import { Button } from "../ui/button";
 
 const StartGame = () => {
-  const navigate = useNavigate();
-  const { setGameState, getGameState } = useAuthContext();
+  const { setGameState } = useAuthContext();
   const { socket } = useSocketContext();
-  const CurrentState = getGameState();
-
-  useEffect(() => {
-    // Set up the socket listener when the component mounts
-    socket?.on("START_GAME", (mes) => {
-      console.log("socket message", mes);
-    });
-
-    // Clean up the socket listener when the component unmounts
-    return () => {
-      socket?.off("START_GAME");
-    };
-  }, []); // Empty dependency array means this runs once on mount
 
   const handleStartGame = (e) => {
     e.preventDefault();
@@ -48,12 +33,12 @@ const StartGame = () => {
         // Only process messages if no error occurred
         // console.log("Message received from server:", msg);
         toast.message(msg);
+        setGameState("SET_BET_AMOUNT");
       }
     });
 
     // Check if an error occurred before updating the game state
     if (!errorOccurred) {
-      setGameState("SET_BET_AMOUNT");
     }
   };
 
@@ -74,34 +59,11 @@ const StartGame = () => {
 
         <div className="absolute -right-5">
           <Button
-            // onClick={(e) => {
-            //   e.preventDefault();
-
-            //   socket?.emit("START_GAME");
-
-            //   socket?.on("ERROR", (msg) => {
-            //     console.log(msg);
-
-            //     return;
-            //   });
-
-            //   socket?.on("MESSAGE", (msg) => {
-            //     toast.message(msg);
-            //     return;
-            //   });
-
-            //   setGameState({
-            //     previous: "START_GAME",
-            //     current: "SET_BET_AMOUNT",
-            //   });
-            // }}
             onClick={handleStartGame}
             size="sm"
             className="group cursor-pointer items-center justify-center rounded-xl border text-lg font-medium bg-[#7A85F4] hover:bg-[#7A85F4]/95 border-[#341D1A] transition-all [box-shadow:0px_4px_1px_#515895] active:translate-y-[3px] active:shadow-none"
           >
-            {/* <Link to="play"> */}
             <img src={youtube} alt="youtube" className="" width={17} />
-            {/* </Link> */}
           </Button>
         </div>
       </div>
@@ -125,7 +87,7 @@ const StartGame = () => {
             size="sm"
             className="group cursor-pointer items-center justify-center rounded-xl border text-lg font-medium bg-[#7A85F4] hover:bg-[#7A85F4]/95 border-[#341D1A] transition-all [box-shadow:0px_4px_1px_#515895] active:translate-y-[3px] active:shadow-none"
           >
-            <Link to="play">
+            <Link to="">
               <img src={youtube} alt="youtube" className="" width={17} />
             </Link>
           </Button>

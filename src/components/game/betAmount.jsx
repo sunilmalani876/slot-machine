@@ -39,8 +39,7 @@ const BetAmount = ({ setGameState }) => {
     socket?.emit("SET_BET_AMOUNT", { betAmount: parseInt(betAmount) });
 
     socket?.once("ERROR", (msg) => {
-      // console.error("Error received from server:", msg);
-      console.log(msg);
+      // console.log(msg);
       toast.error(msg);
       errorOccurred = true;
     });
