@@ -4,7 +4,7 @@
 
 @layer utilities {
   .input {
-    @apply w-full outline-none border-b-4 text-black border-gray-300 rounded-md px-2 ring-0 focus-visible:ring-0 focus:border-gray-500 focus-visible:ring-opacity-0 !important;
+    @apply w-full outline-none border-b-4 text-black border-gray-300 rounded-md px-2 ring-0 focus-visible:ring-0 focus:border-[#FFA013] focus-visible:ring-opacity-0 focus:border-r-0 focus:border-l-0 focus:border-t-0  !important;
   }
   
   .betAmounInput {
