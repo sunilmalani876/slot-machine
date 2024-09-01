@@ -11,7 +11,7 @@ createRoot(document.getElementById("root")).render(
   <AuthContextProvider>
     <SocketContextProvider>
       <App />
-      <Toaster />
+      <Toaster position="top-right" />
     </SocketContextProvider>
   </AuthContextProvider>
   // </StrictMode>

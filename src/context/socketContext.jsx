@@ -17,6 +17,17 @@ export const SocketContextProvider = ({ children }) => {
 
   const userId = getUser();
 
+  const setupSocketHandlers = (socket, onError, onMessage) => {
+    socket?.on("ERROR", onError);
+    socket?.on("MESSAGE", onMessage);
+
+    // Return cleanup function
+    return () => {
+      socket?.off("ERROR", onError);
+      socket?.off("MESSAGE", onMessage);
+    };
+  };
+
   useEffect(() => {
     if (token) {
       const socket = io(`${import.meta.env.VITE_SOCKET_URL}`, {
@@ -57,7 +68,9 @@ export const SocketContextProvider = ({ children }) => {
   }, [token, UserId]);
 
   return (
-    <SocketContext.Provider value={{ socket, CurrentState, setCurrentState }}>
+    <SocketContext.Provider
+      value={{ socket, CurrentState, setCurrentState, setupSocketHandlers }}
+    >
       {children}
     </SocketContext.Provider>
   );

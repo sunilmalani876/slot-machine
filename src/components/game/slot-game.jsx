@@ -35,8 +35,6 @@ const SlotGame = () => {
     currentState,
   } = useAuthContext();
 
-  console.log("currentGameAmount", currentGameAmount);
-
   const { socket } = useSocketContext();
 
   const [currentFrameworks, setCurrentFrameworks] = useState([0, 0, 0]); // Holds the final API response
@@ -97,96 +95,6 @@ const SlotGame = () => {
     });
   };
 
-  // const getSlotResults = async () => {
-  //   // Mock API response; replace this with your actual API call
-  //   return new Promise((resolve) => {
-  //     setTimeout(() => {
-  //       if (socket) {
-  //         socket?.emit("PRESSED_SPIN_BUTTON");
-
-  //         socket?.on("MESSAGE", (msg) => {
-  //           console.log(msg);
-  //         });
-
-  //         socket?.on("WON_LOOSE", (msg) => {
-  //           console.log(msg);
-  //           Cookies.set("slotGameState", JSON.stringify(msg));
-
-  //           // setWinState(msg);
-  //         });
-
-  //         socket.on("ERROR", (msg) => {
-  //           console.log(msg);
-  //         });
-
-  //         setTimeout(() => {
-  //           // Debugging line to check if cookie is retrieved
-  //           console.log("Retrieving cookie...");
-  //           // const cookieValue = Cookies.get("slotGameState");
-
-  //           // Debugging line to check the retrieved cookie value
-  //           // console.log("Cookie Value: ", cookieValue);
-
-  //           // if (cookieValue) {
-  //           //   const data = JSON.parse(cookieValue);
-  //           //   console.log(data);
-  //           //   const first = data.combo[0];
-  //           //   const second = data.combo[1];
-  //           //   const third = data.combo[2];
-  //           resolve([1, 1, 1]);
-
-  //           setTimeout(() => {
-  //             setDialogOpen(true);
-  //           }, 500);
-  //           // } else {
-  //           //   console.error("Cookie 'slotGameState' not found or empty.");
-  //           //   toast.error("somthing wrong");
-  //           //   resolve([]); // Resolve with empty array if no data
-  //           // }
-  //         }, 500);
-  //       }
-  //     }, 1500); // Simulate network delay
-  //   });
-  // };
-
-  // const getSlotResults = async () => {
-  //   // Mock API response; replace this with your actual API call
-  //   return new Promise((resolve) => {
-  //     setTimeout(() => {
-  //       if (socket) {
-  //         socket.emit("PRESSED_SPIN_BUTTON");
-
-  //         socket.on("WON_LOOSE", (msg) => {
-  //           // console.log("win  loose ", msg);
-  //           setWinState(msg);
-  //         });
-
-  //         setTimeout(() => {
-  //           const cookieValue = Cookies.get("slotGameState");
-  //           // console.log("Cookie Value: ", cookieValue);
-
-  //           if (cookieValue) {
-  //             const data = JSON.parse(cookieValue);
-  //             console.log(data);
-  //             const first = data.combo[0];
-  //             const second = data.combo[1];
-  //             const third = data.combo[2];
-  //             resolve([first, second, third]);
-
-  //             setTimeout(() => {
-  //               setDialogOpen(true);
-  //             }, 500);
-  //             // console.log(data);
-  //           } else {
-  //             console.error("Cookie 'slotGameState' not found or empty.");
-  //             resolve([]); // Resolve with empty array if no data
-  //           }
-  //         }, 500);
-  //       }
-  //     }, 700); // Simulate network delay
-  //   });
-  // };
-
   useEffect(() => {
     let intervalId;
 
@@ -216,16 +124,16 @@ const SlotGame = () => {
     return () => {
       clearInterval(intervalId);
     };
-  }, [Start, socket]);
+  }, [Start]);
 
-  const handleGame = (value, e) => {
+  const handleGame = (e, value) => {
     e.preventDefault();
+
     if (value === "PLAY_AGAIN") {
       if (socket) {
         socket.emit("X", { x: "PRESSED_PLAY_AGAIN" });
         socket.emit("PRESSED_PLAY_AGAIN");
         socket.on("MESSAGE", (msg) => {
-          console.log(msg);
           setDialogOpen(false);
           setGameState("START_GAME");
         });
@@ -236,8 +144,8 @@ const SlotGame = () => {
         socket.emit("EXIT_YES");
 
         socket.on("MESSAGE", (msg) => {
-          console.log(msg);
           setDialogOpen(false);
+          setGameState("START_GAME");
           navigate("/");
         });
       }
@@ -278,21 +186,6 @@ const SlotGame = () => {
           ))}
         </div>
 
-        {/* {gameState.previous === "" && (
-          <>
-            <p className="max-w-sm text-center text-xl text-[] pt-2 font-pocket">
-              Please go back and select a game. that you want to be play 🕹.
-            </p>
-            <Button
-              size="sm"
-              className="z-50 group w-[120px] font-pocket cursor-pointer items-center justify-center rounded-xl border text-lg bg-[#7A85F4] hover:bg-[#7A85F4]/95 border-[#341D1A] transition-all [box-shadow:0px_4px_1px_#515895] active:translate-y-[3px] active:shadow-none"
-              onClick={() => navigate(-1)}
-            >
-              Go Back
-            </Button>
-          </>
-        )} */}
-
         {currentState === "SET_BET_AMOUNT" && (
           <BetAmount setGameState={setGameState} />
         )}
@@ -310,7 +203,6 @@ const SlotGame = () => {
               size="sm"
               className="group w-[120px] font-pocket cursor-pointer items-center justify-center rounded-xl border text-lg bg-[#7A85F4] hover:bg-[#7A85F4]/95 border-[#341D1A] transition-all [box-shadow:0px_4px_1px_#515895] active:translate-y-[3px] active:shadow-none"
               onClick={() => setStart(true)}
-              // disabled={Start}
             >
               Spin
             </Button>
@@ -345,13 +237,13 @@ const SlotGame = () => {
               </DialogTitle>
               <div className="space-x-4 pt-2">
                 <Button
-                  onClick={(e) => handleGame("PLAY_AGAIN", e)}
+                  onClick={(e) => handleGame(e, "PLAY_AGAIN")}
                   className="group font-pocket relative inline-flex items-center justify-center overflow-hidden rounded-xl border bg-transparent px-4 text-lg font-medium bg-white hover:bg-neutral-100 border-[#341D1A] text-black transition-all [box-shadow:0px_4px_1px_#515895] active:translate-y-[3px] active:shadow-none"
                 >
                   Play again
                 </Button>
                 <Button
-                  onClick={(e) => handleGame("EXIT_GAME", e)}
+                  onClick={(e) => handleGame(e, "EXIT_GAME")}
                   className="group font-pocket relative inline-flex items-center justify-center overflow-hidden rounded-xl border bg-transparent px-4 text-lg font-medium bg-white hover:bg-neutral-100 border-[#341D1A] text-black transition-all [box-shadow:0px_4px_1px_#515895] active:translate-y-[3px] active:shadow-none"
                 >
                   Exit game

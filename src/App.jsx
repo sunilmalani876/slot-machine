@@ -8,6 +8,7 @@ import SignIn from "./components/auth/sigin";
 import Game from "./components/game/game";
 import Home from "./components/home";
 import { useAuthContext } from "./context/authContext";
+import Profile from "./components/game/profile";
 
 function App() {
   const { token } = useAuthContext();
@@ -25,12 +26,16 @@ function App() {
           <Route
             path="/signup"
             element={token ? <Navigate to="/" /> : <SignIn />}
-            // element={<SignIn />}
           />
 
           <Route
             path="/game/:id"
             element={token ? <Game /> : <Navigate to="/signin" />}
+          />
+
+          <Route
+            path="/profile"
+            element={token ? <Profile /> : <Navigate to="/" />}
           />
 
           <Route path="/dashboard" element={<p>dashboard page</p>} />

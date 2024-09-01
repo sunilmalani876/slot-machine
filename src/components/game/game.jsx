@@ -10,10 +10,7 @@ import SlotGame from "./slot-game";
 import StartGame from "./startGame";
 
 const Game = () => {
-  const { currentState, getGameState } = useAuthContext();
-
-  const state = getGameState();
-  console.log(state);
+  const { currentState } = useAuthContext();
 
   return (
     <div
@@ -27,7 +24,7 @@ const Game = () => {
         <Logo />
         <div className="flex justify-center items-center gap-2">
           <Button asChild variant="ghost" size="icon" className="border-none">
-            <Link to={""}>
+            <Link to={"/profile"}>
               <img
                 src={profile}
                 width={125}

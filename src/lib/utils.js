@@ -1,4 +1,5 @@
 import { clsx } from "clsx";
+import { toast } from "sonner";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs) {
@@ -17,4 +18,14 @@ export const events = {
   exit: "EXIT_GAME",
   exitYes: "EXIT_YES",
   exitNo: "EXIT_NO",
+};
+
+export const handleError = (msg) => {
+  toast.error(msg);
+};
+
+export const handleMessage = (msg, value) => {
+  // Process messages
+  toast.message(msg);
+  setGameState(value);
 };

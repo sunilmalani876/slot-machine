@@ -10,7 +10,6 @@ import { toast } from "sonner";
 
 const BetAmount = ({ setGameState }) => {
   const [betAmount, setBetAmount] = useState("");
-  const [loading, setLoading] = useState(false);
   const { socket } = useSocketContext();
 
   function increaseBetAmount() {
@@ -39,7 +38,6 @@ const BetAmount = ({ setGameState }) => {
     socket?.emit("SET_BET_AMOUNT", { betAmount: parseInt(betAmount) });
 
     socket?.once("ERROR", (msg) => {
-      // console.log(msg);
       toast.error(msg);
       errorOccurred = true;
     });
@@ -47,7 +45,7 @@ const BetAmount = ({ setGameState }) => {
     socket?.on("MESSAGE", (msg) => {
       if (!errorOccurred) {
         // Only process messages if no error occurred
-        toast.message(msg);
+        // toast.message(msg);
         setGameState("PRESSED_SPIN_BUTTON");
       }
     });

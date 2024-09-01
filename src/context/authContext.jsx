@@ -8,11 +8,14 @@ export const AuthContext = createContext();
 
 export const AuthContextProvider = ({ children }) => {
   const BASE_URL = "http://localhost:5000/api/v1/user";
+  const BASE_URL_DASHBOARD = "http://localhost:5000/api/v1/dashboard";
 
   const [token, setToken] = useState(Cookies.get("token") || null);
   const [UserId, setUserId] = useState(Cookies.get("userId") || null);
+  const [currentUser, setCurrentUser] = useState(null);
   const [currentState, setCurrentState] = useState("START_GAME");
   const [slotGameState, setSlotGameState] = useState(null);
+  // console.log("currentState", currentState);
 
   const [currentGameAmount, setCurrentGameAmount] = useState(null);
   const SignUp = async (data) => {
@@ -31,7 +34,6 @@ export const AuthContextProvider = ({ children }) => {
   };
 
   const SignIn = async (data) => {
-    console.log(data);
     const res = await fetch(`${BASE_URL}/login`, {
       method: "POST",
       headers: {
@@ -70,7 +72,6 @@ export const AuthContextProvider = ({ children }) => {
   };
 
   const setGameState = (data) => {
-    console.log("setGameState", data);
     setCurrentState(data);
 
     Cookies.set("userState", data);
@@ -78,7 +79,6 @@ export const AuthContextProvider = ({ children }) => {
 
   const getGameState = () => {
     const data = Cookies.get("userState");
-    console.log("getGameState", data);
 
     return data ? data : "";
   };
@@ -108,27 +108,40 @@ export const AuthContextProvider = ({ children }) => {
     // return result;
   };
 
-  // useEffect(() => {
-  //   const userId = Cookies.get("userId");
-  //   console.log("id", userId);
-  //   if (userId) {
-  //     const fetCurrentUser = async () => {
-  //       const res = await fetch(`${BASE_URL}/currentUser/${userId}`, {
-  //         method: "GET",
-  //         headers: {
-  //           Accept: "application/json",
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       });
-  //       const result = await res.json();
-  //       console.log("result", result);
-  //       if (result.success) {
-  //         setUser(result.data);
-  //       }
-  //     };
-  //     fetCurrentUser();
-  //   }
-  // }, [token]);
+  const gameData = async () => {
+    const res = await fetch(`${BASE_URL_DASHBOARD}/gaming-data`, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await res.json();
+
+    return data;
+  };
+
+  useEffect(() => {
+    if (token) {
+      const fetCurrentUser = async () => {
+        const res = await fetch(`${BASE_URL}/me`, {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const result = await res.json();
+        console.log("result", result);
+        if (result.success) {
+          setCurrentUser(result.data);
+        }
+      };
+
+      fetCurrentUser();
+    }
+  }, [token]);
 
   return (
     <AuthContext.Provider
@@ -142,6 +155,7 @@ export const AuthContextProvider = ({ children }) => {
         LogOut,
         currentState,
         setCurrentState,
+        setCurrentUser,
         getUser,
         setGameState,
         getGameState,
@@ -150,6 +164,8 @@ export const AuthContextProvider = ({ children }) => {
         setCurrentGameAmount,
         currentGameAmount,
         addBalance,
+        currentUser,
+        gameData,
       }}
     >
       {children}
