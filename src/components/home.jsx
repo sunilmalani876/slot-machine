@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 import { useAuthContext } from "@/context/authContext";
 
 const Home = () => {
-  const { currentUser } = useAuthContext();
+  const { token, currentUser } = useAuthContext();
 
   return (
     <div className="w-full min-h-screen relative overflow-y-clip bg-[#FFA013] flex">
@@ -46,7 +46,7 @@ const Home = () => {
           today and experience the ultimate in luxury and fun!
         </p>
 
-        {currentUser ? (
+        {token ? (
           <div>
             <Button
               asChild

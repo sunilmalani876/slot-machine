@@ -122,6 +122,20 @@ export const AuthContextProvider = ({ children }) => {
     return data;
   };
 
+  const leaderBoardData = async () => {
+    const res = await fetch(`${BASE_URL_DASHBOARD}/leaderboard`, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await res.json();
+
+    return data;
+  };
+
   useEffect(() => {
     if (token) {
       const fetCurrentUser = async () => {
@@ -133,9 +147,10 @@ export const AuthContextProvider = ({ children }) => {
           },
         });
         const result = await res.json();
-        console.log("result", result);
         if (result.success) {
           setCurrentUser(result.data);
+
+          // leaderBoardData();
         }
       };
 
@@ -166,6 +181,7 @@ export const AuthContextProvider = ({ children }) => {
         addBalance,
         currentUser,
         gameData,
+        leaderBoardData,
       }}
     >
       {children}
